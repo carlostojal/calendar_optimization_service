@@ -1,5 +1,5 @@
-import { CalendarDayGeneticIndividual } from "../../models/CalendarDayGeneticIndividual";
+import { CalendarDayGeneticPopulation } from "../../models/CalendarDayGeneticPopulation";
 
 export abstract class SelectionMethod {
-    public abstract select(population: CalendarDayGeneticIndividual[]): CalendarDayGeneticIndividual[]
+    public abstract select(population: CalendarDayGeneticPopulation): CalendarDayGeneticPopulation
 }
