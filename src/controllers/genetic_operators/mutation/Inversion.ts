@@ -3,7 +3,7 @@ import { Mutation } from "./Mutation";
 
 export class Inversion extends Mutation {
     public mutate(individual: CalendarDayGeneticIndividual): CalendarDayGeneticIndividual {
-        let individual_genes = individual.Genes;
+        let individual_genes = individual.genes;
         let size = individual_genes.length;
 
         // Get two random numbers
@@ -22,7 +22,7 @@ export class Inversion extends Mutation {
             end--;
         }
 
-        individual.Genes = individual_genes;
+        individual.genes = individual_genes;
 
         return individual;
     }

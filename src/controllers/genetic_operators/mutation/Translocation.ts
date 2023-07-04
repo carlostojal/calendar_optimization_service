@@ -3,7 +3,7 @@ import { CalendarDayGeneticIndividual } from "../../../models/CalendarDayGenetic
 
 export class Translocation extends Mutation {
     public mutate(individual: CalendarDayGeneticIndividual): CalendarDayGeneticIndividual {
-        let individual_genes = individual.Genes;
+        let individual_genes = individual.genes;
         let size = individual_genes.length;
 
         // Get two random numbers
@@ -19,7 +19,7 @@ export class Translocation extends Mutation {
         individual_genes.splice(start, end - start);
         individual_genes.splice(Math.floor(Math.random() * size), 0, ...genes_to_translocate);
 
-        individual.Genes = individual_genes;
+        individual.genes = individual_genes;
 
         return individual;
     }
