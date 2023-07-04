@@ -57,6 +57,7 @@ export class CalendarEvent {
     }
 
     public set eventDate(date: Date) {
+        // TODO: update the day period to match the date
         this.date = date;
     }
 
@@ -65,6 +66,7 @@ export class CalendarEvent {
     }
 
     public set eventDayPeriod(dayPeriod: DayPeriod) {
+        // TODO: update the date to match the day period
         this.preferredDayPeriod = dayPeriod;
     }
 

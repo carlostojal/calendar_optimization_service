@@ -17,6 +17,45 @@ export class Utils {
         }
     }
 
+    static getDateFromDayPeriod(dayPeriod: DayPeriod, date: Date): Date {
+        let newDate = new Date(date);
+        switch (dayPeriod) {
+            case DayPeriod.MORNING:
+                newDate.setHours(8);
+                newDate.setMinutes(0);
+                break;
+            case DayPeriod.AFTERNOON:
+                newDate.setHours(14);
+                newDate.setMinutes(0);
+                break;
+            case DayPeriod.EVENING:
+                newDate.setHours(21);
+                newDate.setMinutes(0);
+                break;
+            case DayPeriod.OFF_WORK:
+                newDate.setHours(0);
+                newDate.setMinutes(0);
+                break;
+        }
+
+        return newDate;
+    }
+
+    static getDateFromBlockIndex(blockIndex: number, date: Date): Date {
+        let newDate = new Date(date);
+        newDate.setHours(Math.floor(blockIndex / 2));
+        newDate.setMinutes((blockIndex % 2) * 30);
+        return newDate;
+    }
+
+    static getDayPeriodFromBlockIndex(blockIndex: number, date: Date): DayPeriod {
+        return this.getDayPeriod(this.getDateFromBlockIndex(blockIndex, date));
+    }
+
+    static getBlockIndex(date: Date): number {
+        return date.getHours() * 2 + Math.floor(date.getMinutes() / 30);
+    }
+
     static getDateStr(date: Date): string {
         return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     }

@@ -1,16 +1,15 @@
 import { CalendarEvent } from "./CalendarEvent";
+import { Utils } from "./Utils";
 
 export class CalendarDayGeneticIndividual {
     
     // the genes are the ids of the events
-    private genes: string[] = new Array<string>(48);
+    private genes: CalendarEvent[] = new Array<CalendarEvent>(48);
     private fitness: number = 0;
 
     constructor() {
         // initialize all genes to empty string
-        this.genes.forEach(gene => {
-            gene = "";
-        });
+        this.genes.fill({} as CalendarEvent);
     }
 
     public initializeGenes(events: CalendarEvent[]): void {
@@ -21,18 +20,16 @@ export class CalendarDayGeneticIndividual {
         // populate the genes with the ids of the events
         for (let i = 0; i < events.length; i++) {
             let event = events[i];
-            let startHour = event.eventDate.getHours();
-            let startMinutes = event.eventDate.getMinutes();
-            let startBlock = startHour * 2 + Math.floor(startMinutes / 30);
-            this.genes[startBlock] = event.id;
+            let startBlock = Utils.getBlockIndex(event.eventDate);
+            this.genes[startBlock] = event;
         }
     }
 
-    public get Genes(): string[] {
+    public get Genes(): CalendarEvent[] {
         return this.genes;
     }
 
-    public set Genes(genes: string[]) {
+    public set Genes(genes: CalendarEvent[]) {
         this.genes = genes;
     }
 
