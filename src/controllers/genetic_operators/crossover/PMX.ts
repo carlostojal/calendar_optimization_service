@@ -7,8 +7,8 @@ export class PMX extends Crossover {
         let offspring1: CalendarEvent[] = [];
         let offspring2: CalendarEvent[] = [];
 
-        let individual1_genes = individual1.Genes;
-        let individual2_genes = individual2.Genes;
+        let individual1_genes = individual1.genes;
+        let individual2_genes = individual2.genes;
 
         let size = individual1_genes.length;
 
@@ -52,9 +52,9 @@ export class PMX extends Crossover {
 
         // create the instances of the offspring
         let offspring1_ind = new CalendarDayGeneticIndividual();
-        offspring1_ind.Genes = offspring1;
+        offspring1_ind.genes = offspring1;
         let offspring2_ind = new CalendarDayGeneticIndividual();
-        offspring2_ind.Genes = offspring2;
+        offspring2_ind.genes = offspring2;
 
         return [offspring1_ind, offspring2_ind];
     }
