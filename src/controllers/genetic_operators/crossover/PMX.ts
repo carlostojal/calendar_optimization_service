@@ -1,10 +1,11 @@
 import { CalendarDayGeneticIndividual } from "../../../models/CalendarDayGeneticIndividual";
+import { CalendarEvent } from "../../../models/CalendarEvent";
 import { Crossover } from "./Crossover";
 
 export class PMX extends Crossover {
     public crossover(individual1: CalendarDayGeneticIndividual, individual2: CalendarDayGeneticIndividual): CalendarDayGeneticIndividual[] {
-        let offspring1: string[] = [];
-        let offspring2: string[] = [];
+        let offspring1: CalendarEvent[] = [];
+        let offspring2: CalendarEvent[] = [];
 
         let individual1_genes = individual1.Genes;
         let individual2_genes = individual2.Genes;
@@ -13,8 +14,8 @@ export class PMX extends Crossover {
 
         // Initialize the offspring
         for (let i = 0; i < size; i++) {
-            offspring1.push("");
-            offspring2.push("");
+            offspring1.push({} as CalendarEvent);
+            offspring2.push({} as CalendarEvent);
         }
 
         // Get two random numbers
