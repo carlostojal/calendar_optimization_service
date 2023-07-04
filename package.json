@@ -1,0 +1,19 @@
+{
+  "name": "calendar_optimization_service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlostojal/calendar_optimization_service.git"
+  },
+  "author": "Carlos Tojal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/carlostojal/calendar_optimization_service/issues"
+  },
+  "homepage": "https://github.com/carlostojal/calendar_optimization_service#readme"
+}
