@@ -4,6 +4,8 @@
   "description": "",
   "main": "build/main.js",
   "scripts": {
+    "start": "node build/main.js",
+    "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +17,17 @@
   "bugs": {
     "url": "https://github.com/carlostojal/calendar_optimization_service/issues"
   },
-  "homepage": "https://github.com/carlostojal/calendar_optimization_service#readme"
+  "homepage": "https://github.com/carlostojal/calendar_optimization_service#readme",
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/uuid": "^9.0.2",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.17",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "uuid": "^9.0.0"
+  }
 }
