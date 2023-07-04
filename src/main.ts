@@ -9,7 +9,15 @@ app.use(express.json());
 
 app.post('/optimize', (req: Request, res: Response) => {
     const events: CalendarEvent[] = req.body.events;
-    const optimizedEvents: CalendarEvent[] = GeneticOptimizer.optimize(events);
+
+    // initialize the genetic algorithm optimizer
+    const geneticOptimizer: GeneticOptimizer = new GeneticOptimizer();
+
+    // start the genetic algorithm
+    const optimizedEvents: CalendarEvent[] = geneticOptimizer.optimize(events);
+
+    // TODO: call the calendar service to save the optimized events
+    
     res.send(optimizedEvents);
 });
 
