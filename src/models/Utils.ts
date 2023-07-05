@@ -10,8 +10,6 @@ export class Utils {
             return DayPeriod.MORNING;
         } else if (hours >= 14 && hours < 20) {
             return DayPeriod.AFTERNOON;
-        } else if (hours >= 21 && hours < 24) {
-            return DayPeriod.EVENING;
         } else {
             return DayPeriod.OFF_WORK;
         }
@@ -28,12 +26,8 @@ export class Utils {
                 newDate.setHours(14);
                 newDate.setMinutes(0);
                 break;
-            case DayPeriod.EVENING:
-                newDate.setHours(21);
-                newDate.setMinutes(0);
-                break;
             case DayPeriod.OFF_WORK:
-                newDate.setHours(0);
+                newDate.setHours(20);
                 newDate.setMinutes(0);
                 break;
         }

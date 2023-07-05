@@ -8,8 +8,8 @@ export class GeneticOptimizer {
     private static readonly TOURNAMENT_SIZE: number = 5;
     private static readonly POPULATION_SIZE: number = 100;
     private static readonly MAX_GENERATIONS: number = 100;
-    private static readonly MUTATION_RATE: number = 0.1;
-    private static readonly CROSSOVER_RATE: number = 0.9;
+    private static readonly MUTATION_RATE: number = 0.3;
+    private static readonly CROSSOVER_RATE: number = 0.7;
 
     private _bestIndividual: CalendarDayGeneticIndividual | undefined;
 
@@ -23,6 +23,8 @@ export class GeneticOptimizer {
         // initialize the tournament
         const tournament: Tournament = new Tournament(GeneticOptimizer.TOURNAMENT_SIZE);
 
+        this._bestIndividual = calendarDayGeneticPopulation.evaluatePopulation();
+
         // evolve the generations
         for(let generation: number = 0; generation < GeneticOptimizer.MAX_GENERATIONS; generation++) {
 
@@ -33,10 +35,21 @@ export class GeneticOptimizer {
             calendarDayGeneticPopulation.applyGeneticOperators(GeneticOptimizer.CROSSOVER_RATE, GeneticOptimizer.MUTATION_RATE);
 
             // evaluate the selected population
-            this._bestIndividual = calendarDayGeneticPopulation.evaluatePopulation();
+            const populationBest: CalendarDayGeneticIndividual = calendarDayGeneticPopulation.evaluatePopulation();
+
+            if(populationBest.fitness < this._bestIndividual.fitness || this._bestIndividual == undefined) {
+                this._bestIndividual = populationBest;
+            }
+
+            // console.log(this._bestIndividual.fitness)
 
         }
 
-        return this._bestIndividual!.events;
+        console.log(`BEST: ${this._bestIndividual.fitness}`);
+
+        // console.log(this._bestIndividual);
+        this._bestIndividual.evaluate();
+
+        return this._bestIndividual.events;
     }
 }
