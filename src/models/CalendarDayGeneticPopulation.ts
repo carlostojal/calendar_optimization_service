@@ -1,7 +1,10 @@
 import { CalendarDayGeneticIndividual } from "./CalendarDayGeneticIndividual";
 import { CalendarEvent } from "./CalendarEvent";
 import { PMX } from "../controllers/genetic_operators/crossover/PMX";
+import { OX } from "../controllers/genetic_operators/crossover/OX";
 import { Translocation } from "../controllers/genetic_operators/mutation/Translocation";
+import { Swap } from "../controllers/genetic_operators/mutation/Swap";
+import { Inversion } from "../controllers/genetic_operators/mutation/Inversion";
 
 export class CalendarDayGeneticPopulation {
 
@@ -30,7 +33,7 @@ export class CalendarDayGeneticPopulation {
         return this._events;
     }
 
-    public set events(events: CalendarEvent[]) {
+    public set events(events: CalendarEvent[] | undefined) {
         this._events = events;
     }
 
@@ -58,7 +61,9 @@ export class CalendarDayGeneticPopulation {
         this._populationSize = populationSize;
         if(this._populationSize != undefined && this._events != undefined) {
             for (let i = 0; i < this._populationSize; i++) {
-                this._individuals.push(new CalendarDayGeneticIndividual());
+                let newIndividual: CalendarDayGeneticIndividual = new CalendarDayGeneticIndividual();
+                newIndividual.initializeGenes(this._events);
+                this._individuals.push(newIndividual);
             }
         } else {
             throw new Error("Population size or events array is undefined");
@@ -76,6 +81,8 @@ export class CalendarDayGeneticPopulation {
                 // update the best individual
                 if(this._bestIndividual == undefined || this._individuals[i].fitness < this._bestIndividual.fitness)
                     this._bestIndividual = this._individuals[i];
+
+                console.log(this._individuals[i].fitness)
 
             }
 
@@ -98,18 +105,22 @@ export class CalendarDayGeneticPopulation {
 
         // apply crossover
         for (let i = 0; i < this._populationSize; i++) {
-            if(Math.random() < this._crossoverRate) {
+            // considering crossover is done in consequent pairs, it is necessary to check if the current individual is the last one
+            if(i <= this._populationSize - 2 && Math.random() < this._crossoverRate) {
                 let offspring = crossover.crossover(this._individuals[i], this._individuals[i+1]);
                 newIndividuals.push(offspring[0]);
+                newIndividuals.push(offspring[1]);
+                i++;
+                // newIndividuals.push(this._individuals[i]);
             } else {
                 newIndividuals.push(this._individuals[i]);
             }
         }
 
         // apply mutation
-        for (let i = 0; i < this._populationSize; i++) {
+        for (let i = 0; i < newIndividuals.length; i++) {
             if(Math.random() < this._mutationRate) {
-                mutation.mutate(newIndividuals[i]);
+                newIndividuals[i] = mutation.mutate(newIndividuals[i]);
             }
         }
 
