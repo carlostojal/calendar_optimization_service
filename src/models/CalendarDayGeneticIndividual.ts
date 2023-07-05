@@ -5,10 +5,10 @@ import { Utils } from "./Utils";
 export class CalendarDayGeneticIndividual {
 
     private static readonly OVERLAP_PENALTY: number = 100;
-    private static readonly DAY_PERIOD_PREFERENCE_VIOLATION_PENALTY: number = 70;
+    private static readonly DAY_PERIOD_PREFERENCE_VIOLATION_PENALTY: number = 25;
     private static readonly FIXED_EVENT_MOVE_PENALTY: number = 300;
-    private static readonly WASTED_TIME_PENALTY: number = 100;
-    private static readonly OFF_WORK_HOURS_EVENT_PENALTY: number = 150;
+    private static readonly WASTED_TIME_PENALTY: number = 200;
+    private static readonly OFF_WORK_HOURS_EVENT_PENALTY: number = 200;
     
     // the genes are the ids of the events
     private _genes: CalendarEvent[] = new Array<CalendarEvent>(48);
@@ -16,19 +16,20 @@ export class CalendarDayGeneticIndividual {
 
     constructor() {
         // initialize all genes to empty string
-        this._genes.fill({} as CalendarEvent);
+        const padding: CalendarEvent = new CalendarEvent();
+        padding.eventName = "<PADDING>";
+        this._genes.fill(padding);
     }
 
     public initializeGenes(events: CalendarEvent[]): void {
-        // each gene is a block of 30 minutes
-        // each gene is a string with the id of the event
-        // the first gene is the block from 00:00 to 00:30
-        // the second gene is the block from 00:30 to 01:00
-        // populate the genes with the ids of the events
+        // put the events on random positions
         for (let i = 0; i < events.length; i++) {
-            let event = events[i];
-            let startBlock = Utils.getBlockIndex(event.eventDate);
-            this._genes[startBlock] = event;
+            let targetIndex: number;
+            do {
+                // check if the target index is not already occupied
+                targetIndex = Math.ceil(Math.random() * (this._genes.length - 1));
+            } while(this._genes[targetIndex].hasOwnProperty("_genes"));
+            this._genes[targetIndex] = events[i];
         }
     }
 
@@ -42,7 +43,7 @@ export class CalendarDayGeneticIndividual {
 
     public get fitness(): number {
         if(this._fitness == undefined) {
-            this.evaluate();
+            this._fitness = this.evaluate();
         }
         return this._fitness as number;
     }
@@ -53,12 +54,15 @@ export class CalendarDayGeneticIndividual {
         // moving fixed (not flexible) events is penalized
         // wasted (free) time in the middle of the day is penalized
         // events allocated in off-work hours are penalized
+        // TODO: value if all the events finish early
 
         let overlappingBlockCount: number = 0;
         let dayPeriodPreferenceViolationCount: number = 0;
         let wastedTimeCount: number = 0;
         let offWorkHoursEventCount: number = 0;
         let fixedEventMoveCount: number = 0;
+
+        let currentWastedBlockCount: number = 0;
 
         // an array of durations of ongoing events
         let iteratingOngoingEvents: number[] = [];
@@ -67,17 +71,19 @@ export class CalendarDayGeneticIndividual {
         for(let i = 0; i < this._genes.length; i++) {
             
             // this is not an empty block: an event is starting
-            if(this._genes[i] != {} as CalendarEvent) {
-                iteratingOngoingEvents.push(Math.ceil(this._genes[i].eventDurationMinutes / 30));
+            if(this._genes[i].eventName !== "<PADDING>") {
+                // add the duration of this event in blocks to the array
+                iteratingOngoingEvents.push(Math.ceil(this._genes[i].eventDurationBlocks));
+
+                // blocks are wasted only if they are in the middle of the day
+                wastedTimeCount += currentWastedBlockCount;
+                currentWastedBlockCount = 0;
 
                 // check if the event is starting in the wrong day period
-                if(Utils.getDayPeriod(this._genes[i].eventDate) != this._genes[i].eventDayPeriod) {
-                    dayPeriodPreferenceViolationCount++;
-                }
-
-                // check if the event is starting in off-work hours
-                if(Utils.getDayPeriod(this._genes[i].eventDate) == DayPeriod.OFF_WORK) {
-                    offWorkHoursEventCount++;
+                if(this._genes[i].eventDayPeriod != null) {
+                    if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].eventDate) != this._genes[i].eventDayPeriod) {
+                        dayPeriodPreferenceViolationCount++;
+                    }
                 }
 
                 // check if the event was moved and should not be moved
@@ -89,15 +95,18 @@ export class CalendarDayGeneticIndividual {
 
             }
 
-            // check wasted time
-            if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].eventDate) !== DayPeriod.OFF_WORK) {
+            // check events in off-work hours
+            if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].eventDate) === DayPeriod.OFF_WORK) {
+                offWorkHoursEventCount += iteratingOngoingEvents.length;
+            } else {
+                // check wasted time
                 if(iteratingOngoingEvents.length == 0) {
-                    wastedTimeCount++;
+                    currentWastedBlockCount++;
                 }
             }
 
             // increment the overlap count
-            overlappingBlockCount += iteratingOngoingEvents.length - 1;
+            overlappingBlockCount += Math.max(0, iteratingOngoingEvents.length - 1);
 
             // decrement the "until end" of ongoing events
             iteratingOngoingEvents.forEach((untilEndOfOngoingEvents, index) => {
@@ -113,6 +122,10 @@ export class CalendarDayGeneticIndividual {
         this._fitness = overlappingBlockCount * CalendarDayGeneticIndividual.OVERLAP_PENALTY + dayPeriodPreferenceViolationCount * CalendarDayGeneticIndividual.DAY_PERIOD_PREFERENCE_VIOLATION_PENALTY +
         fixedEventMoveCount * CalendarDayGeneticIndividual.FIXED_EVENT_MOVE_PENALTY + wastedTimeCount * CalendarDayGeneticIndividual.WASTED_TIME_PENALTY + 
         offWorkHoursEventCount * CalendarDayGeneticIndividual.OFF_WORK_HOURS_EVENT_PENALTY;
+
+        if(this._fitness <= 0) {
+            this._fitness = 99999999999999999;
+        }
         
         return this._fitness;
     }
@@ -124,10 +137,12 @@ export class CalendarDayGeneticIndividual {
         for(let i = 0; i < this._genes.length; i++) {
 
             // this is not an empty block: an event is starting
-            if(this._genes[i] != {} as CalendarEvent) {
+            if(this._genes[i].eventName !== "<PADDING>") {
 
                 // get the date from the block index
                 this.genes[i].eventDate = Utils.getDateFromBlockIndex(i, this.genes[i].eventDate);
+
+                this.genes[i].eventDayPeriod = Utils.getDayPeriodFromBlockIndex(i, this.genes[i].eventDate);
 
                 // add the event to the array
                 events.push(this._genes[i]);
