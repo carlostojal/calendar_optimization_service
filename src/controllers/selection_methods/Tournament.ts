@@ -27,6 +27,7 @@ export class Tournament extends SelectionMethod {
 
         const newPopulation = new CalendarDayGeneticPopulation();
         newPopulation.individuals = selectedIndividuals;
+        newPopulation.events = population.events;
 
         return newPopulation;
     }
