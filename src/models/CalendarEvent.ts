@@ -77,4 +77,12 @@ export class CalendarEvent {
     public set eventDurationMinutes(durationMinutes: number) {
         this.durationMinutes = durationMinutes;
     }
+
+    public get eventDurationBlocks(): number {
+        return Math.ceil(this.durationMinutes / 30);
+    }
+
+    public equals(other: CalendarEvent): boolean {
+        return this.id === other.id;
+    }
 }
