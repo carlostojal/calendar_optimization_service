@@ -1,5 +1,5 @@
 import { CalendarDayGeneticIndividual } from "./CalendarDayGeneticIndividual";
-import { CalendarEvent } from "./CalendarEvent";
+import { CalendarEvent } from "@carlostojal/calendar_shared";
 import { PMX } from "../controllers/genetic_operators/crossover/PMX";
 import { OX } from "../controllers/genetic_operators/crossover/OX";
 import { Translocation } from "../controllers/genetic_operators/mutation/Translocation";
@@ -99,7 +99,7 @@ export class CalendarDayGeneticPopulation {
         this._mutationRate = mutationRate;
 
         const crossover = new PMX();
-        const mutation = new Translocation();
+        const mutation = new Swap();
 
         let newIndividuals: CalendarDayGeneticIndividual[] = [];
 
