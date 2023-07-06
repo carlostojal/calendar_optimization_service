@@ -1,5 +1,4 @@
 import { CalendarDayGeneticIndividual } from "../../../models/CalendarDayGeneticIndividual";
-import { CalendarEvent } from "../../../models/CalendarEvent";
 import { Crossover } from "./Crossover";
 
 export class PMX extends Crossover {

@@ -1,6 +1,6 @@
 import { CalendarDayGeneticIndividual } from "../models/CalendarDayGeneticIndividual";
 import { CalendarDayGeneticPopulation } from "../models/CalendarDayGeneticPopulation";
-import { CalendarEvent } from "../models/CalendarEvent";
+import { CalendarEvent } from "@carlostojal/calendar_shared";
 import { Tournament } from "./selection_methods/Tournament";
 
 export class GeneticOptimizer {
@@ -8,8 +8,8 @@ export class GeneticOptimizer {
     private static readonly TOURNAMENT_SIZE: number = 5;
     private static readonly POPULATION_SIZE: number = 100;
     private static readonly MAX_GENERATIONS: number = 100;
-    private static readonly MUTATION_RATE: number = 0.3;
-    private static readonly CROSSOVER_RATE: number = 0.7;
+    private static readonly MUTATION_RATE: number = 0.35;
+    private static readonly CROSSOVER_RATE: number = 0.8;
 
     private _bestIndividual: CalendarDayGeneticIndividual | undefined;
 

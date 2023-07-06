@@ -1,14 +1,12 @@
-import { CalendarEvent } from "./CalendarEvent";
-import { DayPeriod } from "./DayPeriod";
-import { Utils } from "./Utils";
+import { CalendarEvent, DayPeriod, Utils } from "@carlostojal/calendar_shared";
 
 export class CalendarDayGeneticIndividual {
 
     private static readonly OVERLAP_PENALTY: number = 100;
-    private static readonly DAY_PERIOD_PREFERENCE_VIOLATION_PENALTY: number = 25;
+    private static readonly DAY_PERIOD_PREFERENCE_VIOLATION_PENALTY: number = 5;
     private static readonly FIXED_EVENT_MOVE_PENALTY: number = 300;
-    private static readonly WASTED_TIME_PENALTY: number = 200;
-    private static readonly OFF_WORK_HOURS_EVENT_PENALTY: number = 200;
+    private static readonly WASTED_TIME_PENALTY: number = 100;
+    private static readonly OFF_WORK_HOURS_EVENT_PENALTY: number = 250;
     
     // the genes are the ids of the events
     private _genes: CalendarEvent[] = new Array<CalendarEvent>(48);
@@ -17,7 +15,7 @@ export class CalendarDayGeneticIndividual {
     constructor() {
         // initialize all genes to empty string
         const padding: CalendarEvent = new CalendarEvent();
-        padding.eventName = "<PADDING>";
+        padding.name = "<PADDING>";
         this._genes.fill(padding);
     }
 
@@ -71,24 +69,24 @@ export class CalendarDayGeneticIndividual {
         for(let i = 0; i < this._genes.length; i++) {
             
             // this is not an empty block: an event is starting
-            if(this._genes[i].eventName !== "<PADDING>") {
+            if(this._genes[i].name !== "<PADDING>") {
                 // add the duration of this event in blocks to the array
-                iteratingOngoingEvents.push(Math.ceil(this._genes[i].eventDurationBlocks));
+                iteratingOngoingEvents.push(Math.ceil(this._genes[i].durationBlocks));
 
                 // blocks are wasted only if they are in the middle of the day
                 wastedTimeCount += currentWastedBlockCount;
                 currentWastedBlockCount = 0;
 
                 // check if the event is starting in the wrong day period
-                if(this._genes[i].eventDayPeriod != null) {
-                    if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].eventDate) != this._genes[i].eventDayPeriod) {
+                if(this._genes[i].dayPeriod != null) {
+                    if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].date) != this._genes[i].dayPeriod) {
                         dayPeriodPreferenceViolationCount++;
                     }
                 }
 
                 // check if the event was moved and should not be moved
-                if(!this._genes[i].isFlexible) {
-                    if(i != Utils.getBlockIndex(this._genes[i].eventDate)) {
+                if(!this._genes[i].flexible) {
+                    if(i != Utils.getBlockIndex(this._genes[i].date)) {
                         fixedEventMoveCount++;
                     }
                 }
@@ -96,7 +94,7 @@ export class CalendarDayGeneticIndividual {
             }
 
             // check events in off-work hours
-            if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].eventDate) === DayPeriod.OFF_WORK) {
+            if(Utils.getDayPeriodFromBlockIndex(i, this._genes[i].date) === DayPeriod.OFF_WORK) {
                 offWorkHoursEventCount += iteratingOngoingEvents.length;
             } else {
                 // check wasted time
@@ -137,12 +135,12 @@ export class CalendarDayGeneticIndividual {
         for(let i = 0; i < this._genes.length; i++) {
 
             // this is not an empty block: an event is starting
-            if(this._genes[i].eventName !== "<PADDING>") {
+            if(this._genes[i].name !== "<PADDING>") {
 
                 // get the date from the block index
-                this.genes[i].eventDate = Utils.getDateFromBlockIndex(i, this.genes[i].eventDate);
+                this.genes[i].date = Utils.getDateFromBlockIndex(i, this.genes[i].date);
 
-                this.genes[i].eventDayPeriod = Utils.getDayPeriodFromBlockIndex(i, this.genes[i].eventDate);
+                this.genes[i].dayPeriod = Utils.getDayPeriodFromBlockIndex(i, this.genes[i].date);
 
                 // add the event to the array
                 events.push(this._genes[i]);

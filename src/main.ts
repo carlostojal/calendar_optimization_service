@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { CalendarEvent } from './models/CalendarEvent';
+import { CalendarEvent } from '@carlostojal/calendar_shared';
 import { GeneticOptimizer } from './controllers/GeneticOptimizer';
 
 dotenv.config();
@@ -17,12 +17,12 @@ app.post('/optimize', (req: Request, res: Response) => {
     events.forEach((event: any) => {
         let newEvent: CalendarEvent = new CalendarEvent();
         newEvent.id = event.id || 0;
-        newEvent.eventName = event.name || "New Event";
-        newEvent.eventDescription = event.description || "";
-        newEvent.eventDate = new Date(event.date);
-        newEvent.isFlexible = event.flexible || true;
-        newEvent.eventDurationMinutes = event.durationMinutes || 30;
-        newEvent.eventDayPeriod = event.preferredDayPeriod || null;
+        newEvent.name = event.name || "New Event";
+        newEvent.description = event.description || "";
+        newEvent.date = new Date(event.date);
+        newEvent.flexible = event.flexible || true;
+        newEvent.durationMinutes = event.durationMinutes || 30;
+        newEvent.dayPeriod = event.preferredDayPeriod || null;
 
         calendarEvents.push(newEvent);
     });

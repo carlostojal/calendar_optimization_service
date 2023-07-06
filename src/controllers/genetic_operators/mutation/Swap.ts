@@ -1,6 +1,6 @@
 import { Mutation } from "./Mutation";
 import { CalendarDayGeneticIndividual } from "../../../models/CalendarDayGeneticIndividual";
-import { CalendarEvent } from "../../../models/CalendarEvent";
+import { CalendarEvent } from "@carlostojal/calendar_shared";
 
 export class Swap extends Mutation {
     public mutate(individual: CalendarDayGeneticIndividual): CalendarDayGeneticIndividual {
